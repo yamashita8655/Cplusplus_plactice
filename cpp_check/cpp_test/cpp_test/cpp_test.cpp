@@ -6,32 +6,47 @@
 #include <random>
 #include <list>
 #include <algorithm>
+#include <array>
 
 void new_random_test();
 void new_random_test2();
 void new_random_test3();
-
 void iterator_test();
-
 void loop_test();
-
 void lambda_test();
-
 void emplacement_test();
+void enum_class_test();
+void array_test();
+
+// enum class
+// 強く型付けとスコープの指定が出来る
+enum class COLOR{
+	Red,
+	White
+};
+
+enum class NUMBER{
+	ONE = 1,
+	TWO = 2	
+};
+
+enum class ALIGN : char{
+	Left = 'L',
+	Center = 'C',
+	Right = 'R',
+};
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	new_random_test();
 	new_random_test2();
 	new_random_test3();
-
 	iterator_test();
-
 	loop_test();
-
 	lambda_test();
-
 	emplacement_test();
+	enum_class_test();
+	array_test();
 	return 0;
 }
 
@@ -241,5 +256,56 @@ void lambda_test()
 
 void emplacement_test()
 {
+	std::cout << "-----emplacement_test-----" << '\n';
 
+	// push_backだと、実態を作ってからコピーになるらしい
+	// こっちだと、直接ぶっこめるらしい
+	std::vector<std::string> vec;
+	vec.emplace_back("10");
+		
+	const std::string str = "hello";
+	vec.push_back(str);
+	vec.emplace_back("hello");
+	vec.emplace_back();
+	vec.emplace_back(10, 'a');
+	
+	for(auto n : vec)
+	{
+		std::cout << n.c_str() << '\n';
+	}
+}
+	
+void enum_class_test()
+{
+	std::cout << "-----enum_class_test-----" << '\n';
+	// 暗黙の型変換がされない。場合によっては不便かも？
+	COLOR color = COLOR::Red;
+	color = COLOR::White;
+	//std::cout << color << '\n';// エラー
+
+	NUMBER number = NUMBER::ONE;
+	number = NUMBER::TWO;
+	//std::cout << number << '\n';// エラー
+
+	ALIGN align = ALIGN::Left;
+	//char str = ALIGN::Center;// エラー
+	//std::cout << align << '\n';// エラー
+}
+	
+void array_test()
+{
+	std::cout << "-----array_test-----" << '\n';
+	// 配列にインターフェースを提供してくれるのがarrayらしい
+	std::array<int, 5> ar1 = { 5, 10, 15, 20, 25 };
+	std::array<int, 5> ar2;
+
+	ar2.fill(100);// 要素全初期化
+	ar1 = ar2;// 要素数が同じなら、代入可能らしい
+
+	ar1[0] = 0;
+
+	for(auto n : ar1)
+	{
+		std::cout << n << '\n';
+	}
 }
