@@ -7,6 +7,15 @@
 #include <list>
 #include <algorithm>
 #include <array>
+#include <memory>
+#include <numeric>
+//#include <initializer_list>vc++2012ではサポートされてないらしいｗｗｗｗ
+
+#include "smartpointer.h"
+
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 
 void new_random_test();
 void new_random_test2();
@@ -17,6 +26,10 @@ void lambda_test();
 void emplacement_test();
 void enum_class_test();
 void array_test();
+void smartpointer_test();
+void new_utility();
+
+
 
 // enum class
 // 強く型付けとスコープの指定が出来る
@@ -38,6 +51,10 @@ enum class ALIGN : char{
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	// メモリリークを検出させるための処理
+	_CrtDumpMemoryLeaks();
+	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+
 	new_random_test();
 	new_random_test2();
 	new_random_test3();
@@ -47,6 +64,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	emplacement_test();
 	enum_class_test();
 	array_test();
+	smartpointer_test();
+	new_utility();
 	return 0;
 }
 
@@ -308,4 +327,53 @@ void array_test()
 	{
 		std::cout << n << '\n';
 	}
+}
+
+void smartpointer_test()
+{
+	std::cout << "-----smartpointer_test-----" << '\n';
+	//CSmartPionterTest* pClass = new CSmartPionterTest(); // メモリリークする;
+	// 自動でdeleteしてくれて、コピーが可能らしい
+	std::shared_ptr<CSmartPionterTest> pClass2(new CSmartPionterTest);
+	pClass2->print();
+	pClass2->x = 10;
+	std::shared_ptr<CSmartPionterTest> pClass3 = pClass2;// 両方ともxが10なので、コピーされているのがわかる
+
+	// コピーしない場合は、こっち使う
+	std::unique_ptr<CSmartPionterTest> pClass4(new CSmartPionterTest);
+	pClass4->print();
+	//std::unique_ptr<CSmartPionterTest> pClass5 = pClass4;// コピー不可能
+
+	// これ使うと、効率よく領域を確保してくれるらしいよ？
+	std::shared_ptr<CSmartPionterTest> pClass6 = std::make_shared<CSmartPionterTest>();
+	pClass6->print();
+	//std::unique_ptr<CSmartPionterTest> pClass7 = std::make_unique<CSmartPionterTest>();// C++14から使えるらしいよ
+}
+
+void new_utility()
+{
+	std::cout << "-----new_utility-----" << '\n';
+
+	// 最小、最大値の取得
+	//int a = 5, b = 10, c = 20, d = 50;
+	//int smallest = std::min({a,b,c,d});// VC++2012ではサポートされてねぇっておｗｗｗｗ
+
+
+	// 配列に連続した値で初期化
+	int a[10];
+	std::vector<int> vec(5);
+
+	std::iota(std::begin(a), std::end(a), 0);//0から1ずつ加算して初期化
+	std::iota(std::begin(vec), std::end(vec), 100);//100から1ずつ加算して初期化
+
+	for(auto n : a)
+	{
+		std::cout << n << '\n';
+	}
+
+	for(auto n : vec)
+	{
+		std::cout << n << '\n';
+	}
+
 }
