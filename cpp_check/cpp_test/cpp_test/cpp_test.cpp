@@ -9,6 +9,7 @@
 #include <array>
 #include <memory>
 #include <numeric>
+#include <chrono>
 //#include <initializer_list>vc++2012ではサポートされてないらしいｗｗｗｗ
 
 #include "smartpointer.h"
@@ -376,4 +377,10 @@ void new_utility()
 		std::cout << n << '\n';
 	}
 
+	// 経過時間を計測
+	auto start = std::chrono::system_clock::now();
+	auto end = std::chrono::system_clock::now();
+	std::chrono::duration<double> elapsed = end-start;
+
+	std::cout << elapsed.count() <<'\n';
 }
